@@ -1,1 +1,4 @@
-fn _start(): void {print("hello")}
+fn _start(test: string): void {
+	print("hello")
+	print("hello")
+}

@@ -8,7 +8,7 @@ const TokenList = std.ArrayList(LexicalToken);
 
 pub fn get_lexical_tokens_from_file(allocator: std.mem.Allocator, file: std.fs.File) ![]LexicalToken {
     var buf_reader = std.io.bufferedReader(file.reader());
-    var reader = buf_reader.reader();
+    const reader = buf_reader.reader();
     return try get_lexical_tokens(allocator, reader);
 }
 pub fn get_lexical_tokens(allocator: std.mem.Allocator, reader: anytype) ![]LexicalToken {
@@ -21,7 +21,7 @@ pub fn get_lexical_tokens(allocator: std.mem.Allocator, reader: anytype) ![]Lexi
             else => return err,
         };
         remainder = lexeme.?[1];
-        var token = try evaluate_token(&lexeme.?[0]);
+        const token = try evaluate_token(&lexeme.?[0]);
         try token_list.append(token);
     }
     return token_list.toOwnedSlice();
@@ -47,7 +47,7 @@ fn evaluate_token(lexem: *const Lexeme) !LexicalToken {
 fn get_next_lexeme(allocator: std.mem.Allocator, reader: anytype, state: *State, remainder: ?u8) !?struct { Lexeme, ?u8 } {
     var letters: ?std.ArrayList(u8) = null;
     while (true) {
-        var b = if (remainder != null) remainder.? else try reader.readByte();
+        const b = if (remainder != null) remainder.? else try reader.readByte();
         switch (state.*) {
             .empty => switch (b) {
                 ' ', '\t' => continue,

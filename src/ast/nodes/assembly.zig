@@ -4,12 +4,12 @@ const lexer = @import("../../lexer.zig");
 pub const Assembly = struct { value: []const u8 };
 
 pub fn get_assembly(lexemes: []const lexer.LexicalToken, index: *usize) ?Assembly {
-    if (std.mem.eql(u8, lexemes[index.*].value, "asm")) {
-        index.* += 2;
-        const value = lexemes[index.* - 1].value;
-        return Assembly{ .value = value[1 .. value.len - 1] };
+    if (!std.mem.eql(u8, lexemes[index.*].value, "asm")) {
+        return null;
     }
-    return null;
+    index.* += 2;
+    const value = lexemes[index.* - 1].value;
+    return Assembly{ .value = value[1 .. value.len - 1] };
 }
 
 test "assembly" {

@@ -7,13 +7,13 @@ const functionDefinition = @import("./function-definition.zig");
 
 pub const Line = union(enum) { function_call: functionCall.FunctionCall, function_definition: functionDefinition.FunctionDefinition, assembly: assemblyNode.Assembly, variableDefinition: variableDefinitionNode.VariableDefinition };
 pub const CodeBlock = []Line;
-const CommonError = std.os.WriteError || std.mem.Allocator.Error || error{ BadLineDontKnow, undefinedTypeError, expectedColon, expectedComma, OnlyLiteralsAreSupporeted };
+const CommonError = std.posix.WriteError || std.mem.Allocator.Error || error{ BadLineDontKnow, undefinedTypeError, expectedColon, expectedComma, OnlyLiteralsAreSupporeted };
 
 pub fn get_top_level_code_block(allocator: std.mem.Allocator, lexemes: []const lexer.LexicalToken) !CodeBlock {
     var array = std.ArrayList(Line).init(allocator);
     var index: usize = 0;
     while (index < lexemes.len) {
-        var line = if (!std.mem.eql(u8, lexemes[index].value, "\n")) {
+        const line = if (std.mem.eql(u8, lexemes[index].value, "\n")) {
             index += 1;
             continue;
         } else if (try functionDefinition.get_function_definition(allocator, lexemes, &index)) |function_definition|
@@ -21,8 +21,8 @@ pub fn get_top_level_code_block(allocator: std.mem.Allocator, lexemes: []const l
         else if (try functionCall.get_function_call(allocator, lexemes, &index)) |function_call|
             Line{ .function_call = function_call }
         else {
-            index += 1;
-            continue;
+            std.log.err("Bad token at line 'idk': '{s}'", .{lexemes[index].value});
+            return error.BadLineDontKnow;
         };
         try array.append(line);
     }
@@ -33,7 +33,7 @@ pub fn get_code_block(allocator: std.mem.Allocator, lexemes: []const lexer.Lexic
         index.* += 1;
         var array = std.ArrayList(Line).init(allocator);
         while (!std.mem.eql(u8, lexemes[index.*].value, "}")) {
-            var optional_line =
+            const optional_line =
                 if (std.mem.eql(u8, lexemes[index.*].value, "\n"))
             {
                 index.* += 1;

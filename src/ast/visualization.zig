@@ -1,6 +1,6 @@
 const std = @import("std");
 const stdout_writer = std.io.getStdOut().writer();
-const UnknownPrintError = error{UnknownValue} || std.os.WriteError;
+const UnknownPrintError = error{UnknownValue} || std.posix.WriteError;
 fn print(value: anytype, node_index: *u32) !void {
     try stdout_writer.print("n{d} [label=\"{s}\"];", .{ node_index.*, value });
     node_index.* += 1;

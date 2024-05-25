@@ -7,7 +7,7 @@ const ast = @import("../ast/main.zig");
 const lexer = @import("../lexer.zig");
 // const backend = @import("../backend/main.zig");
 fn run(allocator: std.mem.Allocator, file_name: []const u8) !void {
-    var result = try std.ChildProcess.exec(.{ .argv = &.{file_name}, .allocator = allocator });
+    const result = try std.ChildProcess.exec(.{ .argv = &.{file_name}, .allocator = allocator });
 
     if (result.term.Exited != 0) {
         std.log.err("{s}", .{result.stderr});
@@ -23,7 +23,7 @@ pub fn main(allocator: std.mem.Allocator) !void {
     var file = try std.fs.cwd().openFile(filePath, .{});
     defer file.close();
 
-    var lexical_tokens = try lexer.get_lexical_tokens_from_file(allocator, file);
+    const lexical_tokens = try lexer.get_lexical_tokens_from_file(allocator, file);
 
     if (std.mem.eql(u8, command, "tokens")) {
         try lexer.print_tokens(lexical_tokens);

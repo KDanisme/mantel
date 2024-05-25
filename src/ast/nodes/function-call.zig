@@ -3,7 +3,8 @@ const lexer = @import("../../lexer.zig");
 const literal = @import("./literal.zig");
 pub const FunctionCall = struct { name: []const u8, arguments: []literal.Literal };
 pub fn get_function_call(allocator: std.mem.Allocator, lexemes: []const lexer.LexicalToken, index: *usize) !?FunctionCall {
-    if (!std.mem.eql(u8, lexemes[index.* + 1].value, "(")) {
+    std.log.info("{s}", .{lexemes[index.* + 1].value});
+    if (index.* + 1 >= lexemes.len or !std.mem.eql(u8, lexemes[index.* + 1].value, "(")) {
         return null;
     }
     const name = lexemes[index.*].value;

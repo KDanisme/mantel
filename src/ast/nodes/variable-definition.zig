@@ -4,14 +4,14 @@ const lexer = @import("../../lexer.zig");
 pub const VariableDefinition = struct { name: []const u8, type: typeNode.Type };
 
 pub fn get_variable_definition(lexemes: []const lexer.LexicalToken, index: *usize) !?VariableDefinition {
-    if (std.mem.eql(u8, lexemes[index.*].value, "const")) {
-        const name = lexemes[index.* + 1].value;
-        index.* += 3;
-        const _type = try typeNode.get_type(lexemes, index);
-        const variableDefinition = VariableDefinition{ .name = name, .type = _type };
-        return variableDefinition;
+    if (!std.mem.eql(u8, lexemes[index.*].value, "const")) {
+        return null;
     }
-    return null;
+    const name = lexemes[index.* + 1].value;
+    index.* += 3;
+    const _type = try typeNode.get_type(lexemes, index);
+    const variableDefinition = VariableDefinition{ .name = name, .type = _type };
+    return variableDefinition;
 }
 
 test "function definition" {
